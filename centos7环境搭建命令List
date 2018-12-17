@@ -1,0 +1,34 @@
+npm -ivh jdk-8u191-linux-x64.rpm
+adduser sai
+passwd sai
+whereis sudoers
+vim /etc/sudoers
+rpm -qa | grep mariadb | xargs rpm -e --nodeps
+rpm -qa | grep mariadb
+systemctl start firewalld
+tar -vxf
+yum install lrzsz
+rpm -ivh mysql-community-common-5.7.24-1.el7.x86_64.rpm 
+rpm -ivh mysql-community-libs-5.7.24-1.el7.x86_64.rpm 
+rpm -ivh mysql-community-devel-5.7.24-1.el7.x86_64.rpm 
+rpm -ivh mysql-community-libs-compat-5.7.24-1.el7.x86_64.rpm 
+rpm -ivh mysql-community-client-5.7.24-1.el7.x86_64.rpm 
+yum install libaio
+rpm -ivh mysql-community-server-5.7.24-1.el7.x86_64.rpm
+mysqld —initialize
+cat /var/log/mysqld.log 
+grep 'temporary pass' /var/log/mysqld.log 
+chown mysql:mysql /var/lib/mysql -R
+systemctl start mysqld
+mysql -u root -p
+firewall-cmd --zone=public --add-port=3307/tcp —permanent
+firewall-cmd --reload
+firewall-cmd --query-port=3307/tcp
+
+sudo yum install yum-utils
+sudo yum-config-manager --add-repo https://openresty.org/package/centos/openresty.repo
+sudo yum install openresty
+cd /usr/local/openresty/
+firewall-cmd --zone=public --add-port=80/tcp —permanent
+firewall-cmd —-reload
+firewall-cmd --query-port=80/tcp
