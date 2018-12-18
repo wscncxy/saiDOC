@@ -32,3 +32,31 @@ cd /usr/local/openresty/
 firewall-cmd --zone=public --add-port=80/tcp —permanent
 firewall-cmd —-reload
 firewall-cmd --query-port=80/tcp
+cd /etc/
+vim profile
+source /etc/profile
+
+
+
+
+sudo mkdir data
+sudo mkdir json
+sudo nohup ./consul agent -datacenter=saiConsul -data-dir=/usr/local/consul/data -config-dir=/usr/local/consul/json -log-level=info -syslog -pid-file=/usr/local/consul/pid.file -server -node=consul1 -bootstrap -client=127.0.0.1 -ui &
+sudo nohup ./consul agent -datacenter=saiConsul -data-dir=/usr/local/consul/data -config-dir=/usr/local/consul/json -log-level=info -syslog -pid-file=/usr/local/consul/pid.file -server -node=consul1 -bootstrap -client=172.31.56.192 -ui &
+
+
+
+sudo nohup java -jar jenkins.war  --httpPort=9090 &
+
+sudo mv ./redis-5.0.3 /usr/local/redis
+cd redis
+sudo yum install gcc
+sudo make
+make test
+cd src/
+sudo make install
+sudo cp ./redis.conf redis.conf.back
+sudo vim redis.conf
+sudo /usr/local/bin/redis-server /usr/local/redis/redis.conf
+sudo ./redis-server /usr/local/redis/redis.conf
+redis-cli
