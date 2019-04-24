@@ -1,0 +1,62 @@
+npm -ivh jdk-8u191-linux-x64.rpm
+adduser sai
+passwd sai
+whereis sudoers
+vim /etc/sudoers
+rpm -qa | grep mariadb | xargs rpm -e --nodeps
+rpm -qa | grep mariadb
+systemctl start firewalld
+tar -vxf
+yum install lrzsz
+rpm -ivh mysql-community-common-5.7.24-1.el7.x86_64.rpm 
+rpm -ivh mysql-community-libs-5.7.24-1.el7.x86_64.rpm 
+rpm -ivh mysql-community-devel-5.7.24-1.el7.x86_64.rpm 
+rpm -ivh mysql-community-libs-compat-5.7.24-1.el7.x86_64.rpm 
+rpm -ivh mysql-community-client-5.7.24-1.el7.x86_64.rpm 
+yum install libaio
+rpm -ivh mysql-community-server-5.7.24-1.el7.x86_64.rpm
+mysqld —initialize
+cat /var/log/mysqld.log 
+grep 'temporary pass' /var/log/mysqld.log 
+chown mysql:mysql /var/lib/mysql -R
+systemctl start mysqld
+mysql -u root -p
+firewall-cmd --zone=public --add-port=3307/tcp —permanent
+firewall-cmd --reload
+firewall-cmd --query-port=3307/tcp
+
+sudo yum install yum-utils
+sudo yum-config-manager --add-repo https://openresty.org/package/centos/openresty.repo
+sudo yum install openresty
+cd /usr/local/openresty/
+firewall-cmd --zone=public --add-port=80/tcp —permanent
+firewall-cmd —-reload
+firewall-cmd --query-port=80/tcp
+cd /etc/
+vim profile
+source /etc/profile
+
+
+
+
+sudo mkdir data
+sudo mkdir json
+sudo nohup ./consul agent -datacenter=saiConsul -data-dir=/usr/local/consul/data -config-dir=/usr/local/consul/json -log-level=info -syslog -pid-file=/usr/local/consul/pid.file -server -node=consul1 -bootstrap -client=127.0.0.1 -ui &
+sudo nohup ./consul agent -datacenter=saiConsul -data-dir=/usr/local/consul/data -config-dir=/usr/local/consul/json -log-level=info -syslog -pid-file=/usr/local/consul/pid.file -server -node=consul1 -bootstrap -client=172.31.56.192 -ui &
+
+
+
+sudo nohup java -jar jenkins.war  --httpPort=9090 &
+
+sudo mv ./redis-5.0.3 /usr/local/redis
+cd redis
+sudo yum install gcc
+sudo make
+make test
+cd src/
+sudo make install
+sudo cp ./redis.conf redis.conf.back
+sudo vim redis.conf
+sudo /usr/local/bin/redis-server /usr/local/redis/redis.conf
+sudo ./redis-server /usr/local/redis/redis.conf
+redis-cli
