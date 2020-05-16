@@ -1,0 +1,159 @@
+//双指针
+compact():
+    relocate(HeapStart, HeapEnd) 
+    updateReferences(HeapStart, free)
+    
+relocate(start, end): 
+    free <— start
+    scan <— end
+    
+    while free < scan
+        while isMarked(free) 
+            unsetMarked(free)
+            free <— free + size(free)
+
+        while not isMarked(scan) && scan > free
+            scan <— scan — size(scan) 
+            
+        if scan > free
+            unsetMarked(scan) 
+            move(scan, free)
+            scan <— free  
+            free <— free + size(free)
+            scan <- scan — size(scan)
+
+updateReferences(start, end): 
+    for each fid in Roots
+        ref <- *fld
+        if ref > end
+            *fld <— *ref
+    
+    scan <— start
+    while scan<end
+        for each fld in Pointers(scan)
+            ref <- *fld
+            if ref >= end
+                *fld <- *ref
+        scan <- scan + size(scan)
+        
+
+
+
+
+
+//双链表
+compact():
+    computeLocations(HeapStart, HeapEnd, HeapStart)
+    updateReferences(HeapStart, HeapEnd)
+    relocate(HeapStart, HeapEnd) 5
+
+computeLocations(start, end, toRegion):
+    scan <- start
+    free <- toRegion
+    while scan < end
+        if isMarked(scan)
+            forwardingAddress(scan) <r- free
+            free <- free + size(scan)
+        scan <- scan + size(scan)
+
+updateReferences(start, end):
+    for each fid in Roots
+        ref <- *fld
+        if ref != null
+            *fld <— forwardingAddress(ref)
+            
+    scan <- start 
+    while scan < end
+        if isMarked(scan)
+            for each fid in Pointers(scan)
+                if *fld != null
+                    *fld <— forwardingAddress(*fId)
+        scan <r- scan + size(scan)
+
+relocate(start, end):
+    scan <- start
+    while scan < end
+        if isMarked(scan)
+            dest <r- forwardingAddress(scan)
+            move(scan, dest)
+            unsetMarked(dest)
+        scan <r- scan + size(scan)
+        
+ 
+//引线整理
+compact():
+    updateForwardReferences()
+    updateBackwardReferences()
+
+thread(ref): 
+    if *ref != null
+        *ref, **ref <r- **ref, ref
+
+update(ref, addr): 
+    tmp <- *ref
+    while isReference(tmp)
+        *tmp, tmp <- addr, *tmp
+    *ref <- tmp 
+    
+updateForwardReferences(): 
+    for each fid in Roots
+        thread(*fld)
+        
+    free <— HeapStart
+    scan <— HeapStart
+    while scan < HeapEnd
+        if isMarked(scan)
+            update(scan, free)
+            for each fid in Pointers(scan)
+                thread(fld)
+            free <- free + size(scan)
+        scan <r- scan + size(scan) 28
+
+updateBackwardReferences():
+    free <- HeapStart
+    scan <- HeapStart
+    while scan < HeapEnd
+        if isMarked(scan)
+            update(scan, free)
+            move(scan, free)
+            free <- free + size(scan)
+        scan <- scan + size(scan)
+        
+        
+        
+//单次遍历
+compact():
+　　　　computeLocations(HeapStart, HeapEnd, HeapStart)
+　　　　updateReferencesRelocate(HeapStart, HeapEnd) 4
+
+computeLocations(start, end, toRegion):
+　　　　loc <— toRegion
+　　　　block <— getBlockNum(start)
+　　　　for b <— 0 to numBits(start, end) —1
+　　　　　　　　if b % BITS_IN_BL0CK = 0
+　　　　　　　　　　　　offset[block] <— loc
+　　　　　　　　　　　　block <— block + 1
+　　　　　　　　if bitmap[b] = MARKED
+　　　　　　　　　　　　loc <- loc + BYTES_PER_BIT
+
+newAddress(old):
+　　　　block <— getBlockNum(old)
+　　　　return offset[block] + offsetInBlock(old)
+
+updateReferencesRelocate(start, end): 
+　　　　 for each fid in Roots
+　　　　　　　ref <— *fld
+            if ref != null
+                *fld <— newAddress(ref)
+        scan <— start
+        while scan < end
+            scan <— nextMarkedObject(scan)
+            for each fid in Pointers(scan)
+                ref <— *fld
+                if ref != null
+                    *fld <— newAddress(ref) 
+            dest <— newAddress(scan)
+            move(scan, dest)
+            
+            
+
