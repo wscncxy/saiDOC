@@ -143,7 +143,7 @@ bestFitAllocate(n):
 firstFitAllocateCartesian(n):
     parent <— null
     //从根开始遍历
-    curr <— root
+    curr <— rootOOM
     loop
         //判断左节点非空且左节点最大单元大小是否满足需求
         if left(curr) != null && max(left(curr)) >= n
