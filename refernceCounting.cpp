@@ -1,4 +1,4 @@
-New():
+New(): 
 	//分配空间
     ref <— allocate()
     if ref = null
