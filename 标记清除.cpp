@@ -84,8 +84,62 @@ sweep(start, end):
 			
 			
 
+//Printezis和Detlefs的位图标记
+mark()
+    //获取下个位图标记
+    cur <- nextInBitmap()
+	//循环判断是否超过堆
+    while cur < HeapEnd
+        //当前位，加入worklist	
+        add(worklist, cur)
+		//标记当前位
+        markStep(cur)
+		//获取下个位
+        cur <- nextInBitmap()
+//标记 位
+markStep(start):
+    //循环遍历worklist，直到空
+    while not isEmpty(worklist)
+	    //弹出worklist元素
+        ref <- remove(worklist)
+		//遍历弹出元素的子节点
+        for each fld in Pointers(ref)
+            child <- *fld
+			//判断子节点是否不为空且未被标记
+            if child != null && not isMarked(child)
+			    //子节点不为空且未被标记，标记子节点
+                setMarked(child)
+				//如果子节点所在位置小于start，则加入当前worklist循环
+                if child < start
+                    add(worklist, child)
 
+//惰性
+atomic collectQ:
+    markFromRoots()
+    for each block in Blocks
+        if not isMarked(block)
+            add(blockAllocator, block)
+        else
+            add(reclaimList, block)
 
+atomic allocate(sz):
+    result <— remove(sz)
+	if result = null
+        lazySweep(sz)
+        result <- remove(sz)
+    return result
 
+lazySweep(sz) :
+    repeat
+        block <- nextBlock(reclaimList, sz)
+        if block != null
+            sweep(start(block), end(block))
+            if spaceFound(block)
+			    return
+    until block = null
+    allocSlow(sz)
 
-
+allocSlow(sz) :
+    block <— allocateBlockQ
+    if block != null
+        initialise(block, sz)
