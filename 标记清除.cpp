@@ -114,34 +114,53 @@ markStep(start):
                     add(worklist, child)
 
 //惰性
+//收集
 atomic collect():
+    //标记根
     markFromRoots()
+    //遍历内存块
     for each block in Blocks
+        //判断块是否标记
         if not isMarked(block)
+        	  //将未被标记的块归还给分配器
             add(blockAllocator, block)
         else
+        	  //将标记标记的块，加入待清理队列
             add(reclaimList, block)
 
+//分配
+//sz：指定的分配空间
 atomic allocate(sz):
+	  //尝试分配
     result <— remove(sz)
-	if result = null
+    //判断是否分配成功
+    if result = null
+    	  //执行清理
         lazySweep(sz)
+        //再次尝试分配
         result <- remove(sz)
+    //返回分配结果
     return result
-
+//惰性清理
 lazySweep(sz) :
+	  //do while
     repeat
+        //从标记块列表弹出一个符合sz大小的块
         block <- nextBlock(reclaimList, sz)
         if block != null
+        	  //清理块
             sweep(start(block), end(block))
             if spaceFound(block)
-			    return
+                return
     until block = null
+    //尝试分配空间
     allocSlow(sz)
 
 allocSlow(sz) :
-    block <— allocateBlockQ
+	  //分配块
+    block <— allocateBlock()
     if block != null
+    	  //分配成功，初始化块
         initialise(block, sz)
 
 		
