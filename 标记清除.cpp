@@ -114,7 +114,7 @@ markStep(start):
                     add(worklist, child)
 
 //惰性
-atomic collectQ:
+atomic collect():
     markFromRoots()
     for each block in Blocks
         if not isMarked(block)
@@ -143,3 +143,30 @@ allocSlow(sz) :
     block <— allocateBlockQ
     if block != null
         initialise(block, sz)
+
+		
+		
+//基于先进先出预取缓冲区的标记过程		
+add(worklist, item):
+    markStack <r- getStack(worklist)
+    push(markStack, item)
+
+remove(worklist):
+    markStack <— getStack(worklist)
+    addr <— pop(markStack)
+    prefetch(addr)
+    fifo <— getFifo(worklist)
+    prepend(fifo, addr)
+    return remove(fifo)
+	
+
+//标记对象图的边二非节点
+mark():
+    while not isEmpty(worklist)
+        obj <— remove(worklist)
+        if not isMarked(obj)
+            setMarked(obj)
+            for each fid in Pointers(obj)
+                child <- *fld
+                if child != null
+                    add(worklist, child)
