@@ -29,3 +29,5 @@ nbdist/
 !/@logback.root.path@/cmsystem-log.2017-11-12.log
 /@logback.root.path@/
 .DS_Store
+DOC/.DS_Store
+PPT/.DS_Store
